@@ -76,13 +76,25 @@ const int letterFrequency[26] = {
 int calculateWordScore(const char* word, size_t length, float** weightings)
 {
     float score = 0;
+    int letterCount[26] = {0}; // Array to count occurrences of each letter
 
     for (size_t i = 0; i < length; i++) {
         char lowerChar = tolower(word[i]);
         if (lowerChar >= 'a' && lowerChar <= 'z') {
-            score += letterFrequency[lowerChar - 'a'] * weightings[lowerChar - 'a'][i];
+            int index = lowerChar - 'a';
+            letterCount[index]++;
+            score += letterFrequency[index] * weightings[index][i];
         }
     }
+
+    // Apply penalty for multiple occurrences of the same letter
+    for (int i = 0; i < 26; i++) {
+        if (letterCount[i] > 1) {
+            // Apply penalty (e.g., subtract a fixed amount for each extra occurrence)
+            score -= (letterCount[i] - 1) * 2; // Penalty of 2 per extra occurrence
+        }
+    }
+
     return score;
 }
 
